@@ -24,24 +24,38 @@ window.addEventListener('load', function() {
 				for (var i=0; i<datoteke.length; i++) {
 					var datoteka = datoteke[i];
 					
-					var velikost = datoteka.velikost;
-					var enota = "B";
+					var velikost = formatSizeUnits(datoteka.velikost);
 					
 					datotekeHTML.innerHTML += " \
 						<div class='datoteka senca rob'> \
-							<div class='naziv_datoteke'> " + datoteka.datoteka + "  (" + velikost + " " + enota + ") </div> \
+							<div class='naziv_datoteke'> " + datoteka.datoteka + "  (" + velikost + ") </div> \
 							<div class='akcije'> \
+							| <span><a href='/poglej/" + datoteka.datoteka + "' target='_self'>Poglej</a></span> \
 							| <span><a href='/prenesi/" + datoteka.datoteka + "' target='_self'>Prenesi</a></span> \
 							| <span akcija='brisi' datoteka='"+ datoteka.datoteka +"'>Izbriši</span> </div> \
 					    </div>";	
 				}
 				
 				if (datoteke.length > 0) {
-					document.querySelector("span[akcija=brisi]").addEventListener("click", brisi);
+					var t = document.querySelectorAll("span[akcija=brisi]");
+					for(var i = 0; i<t.length; i++) {
+						t[i].addEventListener("click", brisi);
+					}
 				}
 				ugasniCakanje();
 			}
 		};
+		xhttp.open("GET", "/datoteke", true);
+		xhttp.send();
+	}
+	pridobiSeznamDatotek();
+	
+	function formatSizeUnits(bytes) {
+	    if (bytes >= 1000000000) bytes=(bytes/1000000000).toFixed(2)+' GiB';
+	    else if (bytes >= 1000000) bytes=(bytes/1000000).toFixed(2)+' MiB';
+	    else if (bytes >= 1000) bytes=(bytes/1000).toFixed(2)+' KiB';
+	    else if (bytes > 0) bytes=bytes+' B';
+	    return bytes;
 	}
 	
 	var brisi = function(event) {
